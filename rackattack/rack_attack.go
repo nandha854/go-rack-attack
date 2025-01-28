@@ -94,6 +94,14 @@ func (r *ThrottleRule) matchesPath(reqPath string) bool {
 	return cleanPath == path.Clean(r.PathPattern)
 }
 
+// matchMethod checks if the request method matches the rule's method.
+func (r *ThrottleRule) matchMethod(reqMethod string) bool {
+	if r.Method == "" {
+		return true
+	}
+	return r.Method == reqMethod
+}
+
 //  clientIP extracts the client IP address from the request.
 func (ra *RedisRackAttack) clientIP(req *http.Request) string {
 	// Check for X-Forwarded-For header to handle reverse proxies
@@ -164,7 +172,7 @@ func (ra *RedisRackAttack) IsThrottled(req *http.Request) (bool, error) {
 
 	// Check each throttle rule for the request path and method
 	for _, rule := range ra.throttleRules {
-		if !(rule.matchesPath(reqPath) && req.Method == rule.Method) {
+		if !((rule.matchesPath(reqPath)) && rule.matchMethod(req.Method)) {
 			continue
 		}
 
