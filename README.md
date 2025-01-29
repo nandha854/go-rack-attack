@@ -9,7 +9,6 @@ A Go implementation of the **Rack::Attack** gem, designed to protect your HTTP s
 - **Rate Limiting**: Throttle requests by IP, endpoint, or custom keys.
 - **IP Safelisting/Blocklisting**: Allow or block specific IPs or CIDR ranges.
 - **Redis Backend**: Scalable and distributed rate limiting using Redis.
-- **Middleware Support**: Works with `net/http`, `chi`, `gin`, and `echo`.
 - **Custom Rules**: Define URL-specific or global rate limits.
 - **Path Pattern Matching**: Supports wildcard patterns for paths.
 - **HTTP Method Filtering**: Apply rules based on HTTP methods.
@@ -78,3 +77,66 @@ func main() {
 }
 ```
 
+## Throttle Rules
+
+Define rate-limiting rules using the `AddThrottleRule` method. Each rule specifies:
+
+- **PathPattern**: The URL path to match (supports wildcards like `/api/*`) and leave it as blank for applying the rule to all requests.
+- **Method**: The HTTP method to apply the rule to (e.g., GET, POST) or leave it as blank for applying rule for all requests.
+- **Key**: The Redis key template (e.g., `ratelimit:%{ip}:%{path}`).
+- **Limit**: The maximum number of requests allowed.
+- **Period**: The time window for the limit (e.g., `1 * time.Minute`).
+
+### Example
+
+```go
+ra.AddThrottleRule(rackattack.ThrottleRule{
+    PathPattern: "/login",
+    Method:      "POST",
+    Key:         "ratelimit:%{ip}:login",
+    Limit:       5,
+    Period:      1 * time.Minute,
+})
+```
+
+
+## IP Management
+
+### Safelist IPs
+
+Allow specific IPs to bypass throttling:
+
+```go
+ra.SafelistIP("127.0.0.1")
+```
+### Blocklist IPs
+
+Block specific IPs:
+
+```go
+ra.BlocklistIP("10.0.0.1")
+```
+### Blocklist IPs
+
+Block specific IPs:
+
+```go
+ra.BlocklistIP("10.0.0.1")
+```
+
+
+## Acknowledgements
+
+This project is inspired by and borrows concepts from the following:
+
+- **[Rack::Attack](https://github.com/kickstarter/rack-attack)**: for the core rate-limiting logic and features.
+- **[go-redis](https://github.com/go-redis/redis)**: for Redis client integration.
+
+## Code of Conduct
+
+This project adheres to the [Contributor Covenant](https://www.contributor-covenant.org/).
+
+
+## License
+
+Distributed under the MIT License. See [LICENSE](./LICENSE) for details.
