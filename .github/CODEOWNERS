@@ -1,0 +1,8 @@
+# Default owner for everything in the repo.
+# Owners are automatically requested for review on any PR.
+* @nandha854
+
+# Security-critical code: client-IP trust model and the core filter.
+# Changes here warrant extra scrutiny.
+/rackattack/clientip.go   @nandha854
+/rackattack/rackattack.go @nandha854
